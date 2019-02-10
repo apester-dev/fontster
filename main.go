@@ -15,8 +15,8 @@ var (
 	idleTimeout = flag.Duration("timeout", 620*time.Second, "IdleTimeout for the HTTP server")
 	fontsSource = flag.String("fonts-source", "", "URL to where the fonts are hosted")
 	fontsDir    = flag.String("fonts-dir", "./fonts", "path in the filesystem containing fonts")
-	tlsCert     = flag.String("tls-cert", "../box/certs/apester.local.com.crt", "path to TLS certificate")
-	tlsKey      = flag.String("tls-key", "../box/certs/apester.local.com.key", "path to TLS key")
+	tlsCert     = flag.String("tls-cert", "", "path to TLS certificate")
+	tlsKey      = flag.String("tls-key", "", "path to TLS key")
 )
 
 func main() {
