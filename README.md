@@ -9,6 +9,11 @@ It has a "Google fonts" like API
 - HTTP/2 Push (TLS must be enabled).
 - Only latest web fonts format is supprted (woff2).
 
+## API
+
+`/css?family=Lato|Roboto:700`
+`/css?family=Lato:200i`
+
 ## Notes
 
 The folder structure for your fonts should be like the following: `Family/Family-Style.woff2`
