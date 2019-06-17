@@ -5,23 +5,25 @@ import (
 	"strings"
 )
 
-type FontFamily struct {
-	Family   string
+// Family is a single font family & weight.
+type Family struct {
+	Name     string
 	Style    string
 	Weight   string
 	Filename string
 	BaseURL  string
 }
 
-func Parse(list string, BaseURL string) []FontFamily {
-	var families []FontFamily
+// Parse a string and return a slice of Family
+func Parse(list string, BaseURL string) []Family {
+	var families []Family
 	fonts := strings.Split(list, "|")
 	for _, font := range fonts {
 		f, weights := familyAndWeights(font)
 		for _, weight := range weights {
 			style, name := fontGroups(weight)
-			family := FontFamily{
-				Family:   f,
+			family := Family{
+				Name:     f,
 				Style:    style,
 				Weight:   strings.Trim(weight, "i"),
 				Filename: fmt.Sprintf("%s-%s.woff2", f, name),
@@ -35,10 +37,17 @@ func Parse(list string, BaseURL string) []FontFamily {
 
 func familyAndWeights(list string) (string, []string) {
 	weights := strings.Split(list, ":")
-	if len(weights) == 1 {
-		weights = append(weights, "400")
+	family := weights[0]
+
+	// When family has no weight,
+	// set regular as default and return.
+	if len(weights) == 1 || weights[1] == "" {
+		return family, []string{"400"}
 	}
-	return weights[0], weights[1:]
+
+	// Allow multiple weights.
+	weights = strings.Split(weights[1], ",")
+	return family, weights
 
 }
 
@@ -64,6 +73,7 @@ func fontGroups(weight string) (string, string) {
 		return "normal", "Bold"
 	case "700i":
 		return "italic", "BoldItalic"
+	default:
+		return "normal", "Regular"
 	}
-	return "normal", "Regular"
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/qmerce/fontster/pkg/font"
 )
 
+// Options helps configure the FontsServer.
 type Options struct {
 	Address     string
 	LocalDir    string
@@ -24,6 +25,7 @@ type Options struct {
 	KeyFile     string
 }
 
+// FontsServer receives Options and starts the HTTP server.
 func FontsServer(opts Options) error {
 	if opts.URL == "" {
 		opts.URL = "/fonts"
@@ -37,19 +39,17 @@ func FontsServer(opts Options) error {
 	srv := &http.Server{Addr: opts.Address, IdleTimeout: opts.IdleTimeout}
 
 	// handle graceful shutdown
-	ctx, cancel := context.WithCancel(context.Background())
+	idleConns := make(chan struct{})
 	go func() {
 		q := make(chan os.Signal)
 		signal.Notify(q, syscall.SIGTERM)
 		<-q
 
-		// turn off keepalives before shutdown
-		srv.SetKeepAlivesEnabled(false)
 		log.Println("shutting down...")
-		if err := srv.Shutdown(ctx); err != nil {
+		if err := srv.Shutdown(context.Background()); err != nil {
 			log.Fatalf("could not shutdown gracefully: %v", err)
 		}
-		cancel()
+		close(idleConns)
 	}()
 
 	log.Printf("started server on %s", opts.Address)
@@ -66,7 +66,7 @@ func FontsServer(opts Options) error {
 		return err
 	}
 
-	<-ctx.Done()
+	<-idleConns
 	return nil
 }
 
@@ -81,7 +81,7 @@ func fontsHandler(tmpl *template.Template, url string) http.Handler {
 		fonts := font.Parse(familyParam, url)
 		if pusher, ok := w.(http.Pusher); ok {
 			for _, f := range fonts {
-				err := pusher.Push(fmt.Sprintf("%s/%s/%s", url, f.Family, f.Filename), nil)
+				err := pusher.Push(fmt.Sprintf("%s/%s/%s", url, f.Name, f.Filename), nil)
 				if err != nil {
 					log.Printf("could not push: %v", err)
 				}

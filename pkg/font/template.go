@@ -1,13 +1,11 @@
 package font
 
-import (
-	"text/template"
-)
+import "text/template"
 
 const t = `{{range .}}
 @font-face {
-  font-family: '{{.Family}}';
-  src: local('{{.Filename}}'), url('{{.BaseURL}}/{{.Family}}/{{.Filename}}') format('woff2');
+  font-family: '{{.Name}}';
+  src: local('{{.Filename}}'), url('{{.BaseURL}}/{{.Name}}/{{.Filename}}') format('woff2');
   font-weight: {{.Weight}};
   font-style: {{.Style}};
 }
