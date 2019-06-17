@@ -9,18 +9,16 @@ import (
 	"github.com/qmerce/fontster/pkg/http"
 )
 
-// Command line flags config.
-var (
-	address     = flag.String("address", "localhost:3000", "listen address")
-	idleTimeout = flag.Duration("timeout", 620*time.Second, "IdleTimeout for the HTTP server")
-	fontsSource = flag.String("fonts-source", "", "URL to where the fonts are hosted")
-	fontsDir    = flag.String("fonts-dir", "./fonts", "path in the filesystem containing fonts")
-	tlsCert     = flag.String("tls-cert", "", "path to TLS certificate")
-	tlsKey      = flag.String("tls-key", "", "path to TLS key")
-)
-
 func main() {
+	// CLI flags.
+	address := flag.String("address", "localhost:3000", "listen address")
+	idleTimeout := flag.Duration("timeout", 620*time.Second, "IdleTimeout for the HTTP server")
+	fontsSource := flag.String("fonts-source", "", "URL to where the fonts are hosted")
+	fontsDir := flag.String("fonts-dir", "./fonts", "path in the filesystem containing fonts")
+	tlsCert := flag.String("tls-cert", "", "path to TLS certificate")
+	tlsKey := flag.String("tls-key", "", "path to TLS key")
 	flag.Parse()
+
 	err := http.FontsServer(http.Options{
 		Address:     *address,
 		LocalDir:    *fontsDir,

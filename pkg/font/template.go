@@ -14,6 +14,7 @@ const t = `{{range .}}
 {{end}}
 `
 
+// CSSTemplate returns parsed CSS template.
 func CSSTemplate() *template.Template {
 	return template.Must(template.New("template.css").Parse(t))
 }
