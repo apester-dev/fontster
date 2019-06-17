@@ -5,7 +5,7 @@ import "text/template"
 const t = `{{range .}}
 @font-face {
   font-family: '{{.Name}}';
-  src: local('{{.Filename}}'), url('{{.BaseURL}}/{{.Name}}/{{.Filename}}') format('woff2');
+  src: local('{{.Filename}}'), url('{{.BaseURL}}/{{.Name}}/{{.Filename}}.woff2') format('woff2');
   font-weight: {{.Weight}};
   font-style: {{.Style}};
 }

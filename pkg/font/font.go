@@ -26,7 +26,7 @@ func Parse(list string, BaseURL string) []Family {
 				Name:     f,
 				Style:    style,
 				Weight:   strings.Trim(weight, "i"),
-				Filename: fmt.Sprintf("%s-%s.woff2", f, name),
+				Filename: fmt.Sprintf("%s-%s", f, name),
 				BaseURL:  BaseURL,
 			}
 			families = append(families, family)
