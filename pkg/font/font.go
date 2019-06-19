@@ -16,8 +16,8 @@ type Family struct {
 
 // Parse a string and return a slice of Family
 func Parse(list string, BaseURL string) []Family {
-	var families []Family
 	fonts := strings.Split(list, "|")
+	families := make([]Family, 0, len(fonts))
 	for _, font := range fonts {
 		f, weights := familyAndWeights(font)
 		for _, weight := range weights {
