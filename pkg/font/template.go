@@ -5,13 +5,14 @@ import (
 	"strings"
 )
 
-const t = `{{range .}}@font-face {
+const t = `{{range . -}}
+@font-face {
   font-family: '{{.Name}}';
   src: local('{{.FileName}}'), url('{{.Source}}.woff2') format('woff2');
   font-weight: {{ extractWeight .Weight}};
   font-style: {{.Style}};
 }
-{{end}}
+{{end -}}
 `
 
 // CSSTemplate returns parsed CSS template.
