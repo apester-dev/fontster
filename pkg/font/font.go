@@ -5,13 +5,12 @@ import (
 	"strings"
 )
 
-// Family is a single font family & weight.
+// Family is a single font family and weight.
 type Family struct {
-	Name     string
-	Style    string
-	Weight   string
-	Filename string
-	BaseURL  string
+	Name    string
+	Style   string
+	Weight  string
+	BaseURL string
 }
 
 // Parse a string and return a slice of Family
@@ -19,20 +18,31 @@ func Parse(list string, BaseURL string) []Family {
 	fonts := strings.Split(list, "|")
 	families := make([]Family, 0, len(fonts))
 	for _, font := range fonts {
-		f, weights := familyAndWeights(font)
+		family, weights := familyAndWeights(font)
 		for _, weight := range weights {
-			style, name := fontGroups(weight)
-			family := Family{
-				Name:     f,
-				Style:    style,
-				Weight:   strings.Trim(weight, "i"),
-				Filename: fmt.Sprintf("%s-%s", f, name),
-				BaseURL:  BaseURL,
-			}
-			families = append(families, family)
+			families = append(families, Family{
+				Name:    family,
+				Style:   normalOrItalic(weight),
+				Weight:  weight,
+				BaseURL: BaseURL,
+			})
 		}
 	}
 	return families
+}
+
+// Source returns the full path to the font.
+func (f Family) Source() string {
+	return fmt.Sprintf("%s/%s/%s", f.BaseURL, removeSpaces(f.Name), f.FileName())
+}
+
+// FileName returns the basename of the font.
+func (f Family) FileName() string {
+	return fmt.Sprintf("%s-%s", removeSpaces(f.Name), WeightName(f.Weight))
+}
+
+func removeSpaces(family string) string {
+	return strings.Join(strings.Fields(family), "")
 }
 
 func familyAndWeights(list string) (string, []string) {
@@ -51,29 +61,31 @@ func familyAndWeights(list string) (string, []string) {
 
 }
 
-func fontGroups(weight string) (string, string) {
-	switch weight {
-	case "100":
-		return "normal", "Thin"
-	case "100i":
-		return "italic", "Thin"
-	case "200":
-		return "normal", "ExtraLight"
-	case "200i":
-		return "italic", "ExtraLight"
-	case "300":
-		return "normal", "Light"
-	case "300i":
-		return "italic", "LightItalic"
-	case "400":
-		return "normal", "Regular"
-	case "400i":
-		return "italic", "Italic"
-	case "700":
-		return "normal", "Bold"
-	case "700i":
-		return "italic", "BoldItalic"
-	default:
-		return "normal", "Regular"
+func normalOrItalic(weight string) string {
+	if strings.Contains(weight, "i") {
+		return "italic"
 	}
+	return "normal"
+}
+
+var weights = map[string]string{
+	"100":  "Thin",
+	"100i": "ThinItalic",
+	"200":  "ExtraLight",
+	"200i": "ExtraLightItalic",
+	"300":  "Light",
+	"300i": "LightItalic",
+	"400":  "Regular",
+	"400i": "RegularItalic",
+	"500":  "Medium",
+	"500i": "MediumItalic",
+	"700":  "Bold",
+	"700i": "BoldItalic",
+}
+
+func WeightName(weight string) string {
+	if w, ok := weights[weight]; ok {
+		return w
+	}
+	return "Regular"
 }

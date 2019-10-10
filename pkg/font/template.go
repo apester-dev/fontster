@@ -1,11 +1,14 @@
 package font
 
-import "text/template"
+import (
+	"html/template"
+	"strings"
+)
 
 const t = `{{range .}}@font-face {
   font-family: '{{.Name}}';
-  src: local('{{.Filename}}'), url('{{.BaseURL}}/{{.Name}}/{{.Filename}}.woff2') format('woff2');
-  font-weight: {{.Weight}};
+  src: local('{{.FileName}}'), url('{{.Source}}.woff2') format('woff2');
+  font-weight: {{ extractWeight .Weight}};
   font-style: {{.Style}};
 }
 {{end}}
@@ -13,5 +16,9 @@ const t = `{{range .}}@font-face {
 
 // CSSTemplate returns parsed CSS template.
 func CSSTemplate() *template.Template {
-	return template.Must(template.New("template.css").Parse(t))
+	return template.Must(template.New("template.css").Funcs(template.FuncMap{
+		"extractWeight": func(weight string) string {
+			return strings.Trim(weight, "i")
+		},
+	}).Parse(t))
 }
